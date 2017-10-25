@@ -1,4 +1,4 @@
-
+#' @export
 CodeToHtml <- function(code) {
 
   Code <- str_split(code, "\n", simplify = TRUE)[1, ]
@@ -18,7 +18,7 @@ CodeToHtml <- function(code) {
 }
 
 
-
+#' @export
 FunctionToHtml <- function(f){
 
   # Try to get the actual source code

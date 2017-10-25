@@ -1,3 +1,4 @@
+#' @include HtmlToTagList.R
 #' @include MarkdownToHtml.R
 #' @include CodeToHtml.R
 NULL

@@ -1,5 +1,5 @@
 
-
+#' @export
 HtmlToTagList<-function(rawHtml){
 
   # TODO:  Before we get started, we also need to
