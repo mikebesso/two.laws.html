@@ -64,11 +64,16 @@ UnescapeEntities <- function(x){
 #' @export
 UnescapeTagList <- function(tagList){
 
-  TagList <- rapply(
-    tagList,
-    UnescapeEntities,
-    classes = "character",
-    how = "replace"
+  # We are swallowing the warning that we sometimes get
+  TagList <- tryCatch(
+    rapply(
+      tagList,
+      UnescapeEntities,
+      classes = "character",
+      how = "replace"
+    ),
+    warning = function(w){},
+    error = function(e){}
   )
 
   return(TagList)
