@@ -3,23 +3,26 @@ CodeToHtml <- function(code) {
 
   Code <- str_split(code, "\n", simplify = TRUE)[1, ]
 
-  TempFile <- tempfile()
+  TempInputFile <- tempfile()
+  TempOutputFile <- tempfile()
 
 
-  writeLines(Code, con = TempFile)
+  writeLines(Code, con = TempInputFile)
 
   highlight::highlight(
-    file = TempFile,
+    file = TempInputFile,
     renderer = highlight::renderer_html(document = FALSE),
     final.newline = TRUE,
-    show_line_numbers = TRUE
+    show_line_numbers = TRUE,
+    output = TempOutputFile
   )
 
+  readLines(TempOutputFile)
 }
 
 
 #' @export
-FunctionToHtml <- function(f){
+FunctionToHtml <- function(f, divClass = "code-r"){
 
   # Try to get the actual source code
   Code <- attr(f, "srcref")
@@ -36,9 +39,15 @@ FunctionToHtml <- function(f){
     )
   }
 
-  Code2Html(Code)
+  Html <- CodeToHtml(Code)
+
+
+  Html <- c(paste0("<div class='", divClass, "'>"), Html, "</div>")
+
+  return(Html)
+
 
 }
 
 
-
+FunctionToHtml(FunctionToHtml)

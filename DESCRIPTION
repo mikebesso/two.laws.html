@@ -13,15 +13,16 @@ Depends:
   two.laws.big.bang,
   rmarkdown,
   knitr,
-  htmltools
+  htmltools,
+  shiny
 RoxygenNote: 6.0.1
-Suggests: knitr,
-    rmarkdown,
+Suggests:
     testthat
 Collate: 
     'CodeToHtml.R'
     'HtmlToTagList.R'
     'MarkdownToHtml.R'
     'HtmlGeneratorClass.R'
+    'tags_plus.R'
     'two.laws.html.R'
 VignetteBuilder: knitr
