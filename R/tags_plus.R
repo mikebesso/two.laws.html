@@ -1,8 +1,18 @@
 
-ParseFunctionText <- function(text){
-  parse(text = text)[[1]]
-}
 
+
+#' @export
+CreateTagFunction <- function(tag){
+
+  # Generate the text of the function
+  FunctionText <- paste0("htmltools::tag('", tag, "', list(...))")
+
+  # Create the function
+  TagFunction <- eval(bquote(function(...) .(ParseFunctionText(FunctionText))))
+
+  # Return
+  return(TagFunction)
+}
 
 
 #' @export
@@ -20,10 +30,7 @@ AddTagsToHtmlTools <- function(newTags){
   # Create the new tag functions
   NewTagFunctions <- sapply(
     NewTags,
-    function(newTag){
-      FunctionText <- paste0("htmltools::tag('", newTag, "', list(...))")
-      eval(bquote(function(...) .(ParseFunctionText(FunctionText))))
-    },
+    CreateTagFunction,
     USE.NAMES = TRUE
   )
 
