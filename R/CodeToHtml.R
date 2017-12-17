@@ -27,7 +27,9 @@ FunctionToHtml <- function(f, divClass = "code-r"){
   # Try to get the actual source code
   Code <- attr(f, "srcref")
 
-  # If we have source code, then use it so that we get the commnets
+  # If we have source code,
+  #   then use it so that we get the comments
+  #   else grab the body and use it instead
   if (!is.null(Code)){
     Code <- paste0("f <- ", paste(as.character(Code, useSource = TRUE), collapse = "\n"))
   } else {
@@ -40,7 +42,6 @@ FunctionToHtml <- function(f, divClass = "code-r"){
   }
 
   Html <- CodeToHtml(Code)
-
 
   Html <- c(paste0("<div class='", divClass, "'>"), Html, "</div>")
 
