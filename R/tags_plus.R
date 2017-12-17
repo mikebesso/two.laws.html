@@ -58,7 +58,3 @@ AddSvgTagsToHtmlTools <- function(){
 }
 
 
-.onLoad<- function(libname, pkgname){
-  message("Adding SVG tags to HtmlTools")
-  AddSvgTagsToHtmlTools()
-}

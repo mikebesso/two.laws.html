@@ -1,14 +1,17 @@
-#' @export
-CodeToHtml <- function(code) {
+#' @include polymorphism.R
 
+#' @export
+HighlightCode <- function(code){
+
+  # Covert the string of code to a file of lines
   Code <- str_split(code, "\n", simplify = TRUE)[1, ]
 
   TempInputFile <- tempfile()
   TempOutputFile <- tempfile()
 
-
   writeLines(Code, con = TempInputFile)
 
+  # Highlight the file
   highlight::highlight(
     file = TempInputFile,
     renderer = highlight::renderer_html(document = FALSE),
@@ -17,38 +20,49 @@ CodeToHtml <- function(code) {
     output = TempOutputFile
   )
 
-  readLines(TempOutputFile)
+  # Get the highlighted file
+  Lines <- readLines(TempOutputFile)
+
+  # Return the highlighted file
+  return(Lines)
 }
 
 
 #' @export
-FunctionToHtml <- function(f, divClass = "code-r"){
+CodeToHtml <- function(code, divClass = 'code-r') {
+
+  # Add syntax highlighting
+  Lines <- HighlightCode(code)
+
+  # Wrap the code (read from the temp file) in a div with a class
+  Html <- as.html(
+    c(
+      paste0("<div class='", divClass, "'>"),
+      Lines,
+      "</div>"
+    )
+  )
+
+  # Return the Html
+  return(Html)
+
+}
+
+
+#' @export
+FunctionToHtml <- function(f, divClass = "code-r", fName = substitute(f)){
 
   # Try to get the actual source code
-  Code <- attr(f, "srcref")
+  Code <- GetFunctionDefinition(f, fName)
 
-  # If we have source code,
-  #   then use it so that we get the comments
-  #   else grab the body and use it instead
-  if (!is.null(Code)){
-    Code <- paste0("f <- ", paste(as.character(Code, useSource = TRUE), collapse = "\n"))
-  } else {
-    Code <- paste(
-      deparse(
-        functionBody(f)
-      ),
-      collapse = "\n"
-    )
-  }
+  # Turn the code into Html
+  Html <- CodeToHtml(Code, divClass)
 
-  Html <- CodeToHtml(Code)
-
-  Html <- c(paste0("<div class='", divClass, "'>"), Html, "</div>")
-
+  # Return the Html
   return(Html)
 
 
 }
 
 
-FunctionToHtml(FunctionToHtml)
+
