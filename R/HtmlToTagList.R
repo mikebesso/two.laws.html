@@ -1,3 +1,30 @@
+# TOKENS <- data_frame(
+#   raw = c('="', '">', '"'), #, "'"),   # , "(", ")"),
+#   escaped = c("=&QUOT", "&QUOT>", "&quot;") #, "&#039;", "&#40", "&#41")
+# )
+#
+#
+#
+# EscapeHtmlToTaglist <- function(string) {
+#   for (i in seq_along(TOKENS$raw)) {
+#     raw <- TOKENS$raw[i]
+#     escaped <- TOKENS$escaped[i]
+#     string <- gsub(raw, escaped, string, fixed = TRUE)
+#   }
+#   string
+# }
+#
+#
+# UnescapeHtmlToTaglist <- function(string) {
+#   for (i in rev(seq_along(TOKENS$raw))) {
+#     raw <- TOKENS$raw[i]
+#     escaped <- TOKENS$escaped[i]
+#     string <- gsub(escaped, raw, string, fixed = TRUE)
+#   }
+#   string
+# }
+
+
 
 #' @export
 HtmlToTagList<-function(rawHtml){
@@ -7,46 +34,13 @@ HtmlToTagList<-function(rawHtml){
   # Handle html entities
 
 
-  TOKENS <- data_frame(
-    raw = c('="', '">', '"'), #, "'"),   # , "(", ")"),
-    escaped = c("=&QUOT", "&QUOT>", "&quot;") #, "&#039;", "&#40", "&#41")
-  )
-
-
-
-  EscapeHtmlToTaglist <- function(string) {
-    for (i in seq_along(TOKENS$raw)) {
-      raw <- TOKENS$raw[i]
-      escaped <- TOKENS$escaped[i]
-      string <- gsub(raw, escaped, string, fixed = TRUE)
-    }
-    string
-  }
-
-
-  UnescapeHtmlToTaglist <- function(string) {
-    for (i in rev(seq_along(TOKENS$raw))) {
-      raw <- TOKENS$raw[i]
-      escaped <- TOKENS$escaped[i]
-      string <- gsub(escaped, raw, string, fixed = TRUE)
-    }
-    string
-  }
-
-  #escapedHtml <- EscapeHtmlToTaglist(rawHtml)
-
   # Get rid of line feeds
-  #escapedHtml <- str_replace_all(escapedHtml, fixed("\n"), "")
-
   escapedHtml <- str_replace_all(rawHtml, fixed("\n"), "")
 
   # replace empty self closing tags with full tags
   escapedHtml <- str_replace_all(escapedHtml, "<(\\w+)\\s*/>", "<\\1></\\1>")
 
-
-
   # Split our input into tokens based on tags
-
   SplitHtml <- escapedHtml  %>%
     str_replace_all("<\\/[^>]*>", "~~~@CLOSE~~~") %>%
     str_replace_all("<([^ //>])", "~~~@OPEN_LEFT_\\1") %>%
@@ -58,16 +52,12 @@ HtmlToTagList<-function(rawHtml){
   TagCodeList <- TagCodeList[TagCodeList != ""]
 
 
-
   #replace " with '
   TagCodeList <- gsub('"', "'", TagCodeList)
 
 
-  # #replace close tag with ),
-  # TagCodeList <- gsub('</(.*?)>', "),", TagCodeList)
-
-  # We are not yet handling:
-  #    * ampersands in href arguments
+  # TODO:
+  #   Handle ampersands in href arguments
 
 
   # Find tags with attributes
@@ -92,9 +82,7 @@ HtmlToTagList<-function(rawHtml){
       ', \\1='
     )
 
-
     TagCodeList[attrIdx] <- attrVal
-    #TagCodeList[attrIdx] <- str_replace_all(TagCodeList[attrIdx], "&QUOT", "'")
   }
 
 
@@ -122,8 +110,6 @@ HtmlToTagList<-function(rawHtml){
     TagCodeList <- TagCodeList[-InitialCommasToRemove]
   }
 
-
-
   # Add quotes to inside html text
   InsideHtmlIndices <- c(
     which(!str_detect(TagCodeList, "^tags\\$") & !(TagCodeList %in% c(")", "), ", ","))),
@@ -133,8 +119,6 @@ HtmlToTagList<-function(rawHtml){
     TagCodeList[InsideHtmlIndices] <- paste0('"', TagCodeList[InsideHtmlIndices], '"')
   }
 
-
-
   # Add commas between tags
   TagsIndices <- which(str_detect(TagCodeList, "^tags\\$"))
   TagsInsideTags <- intersect(InsideHtmlIndices + 1, TagsIndices)
@@ -142,17 +126,11 @@ HtmlToTagList<-function(rawHtml){
     TagCodeList[TagsInsideTags] <- paste0(", ", TagCodeList[TagsInsideTags])
   }
 
-
   # Remove last comma
   TagCodeList[length(TagCodeList)] <- ")"
 
-
   # Collaps our tokens into a single string
   TagCode <- paste0(TagCodeList, collapse = '')
-
-
-  #TagCodeList <- UnescapeHtmlToTaglist(TagCodeList)
-
 
   #eval to tagList object
   TagList <- eval(parse(text=sprintf('tagList(list(%s))', TagCode)))

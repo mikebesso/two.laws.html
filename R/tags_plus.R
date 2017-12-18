@@ -27,7 +27,7 @@ AddTagsToHtmlTools <- function(newTags){
   # Name each tag
   names(NewTags) <- NewTags
 
-  # Create the new tag functions
+  # Create the new tag functions, making sure we get a named list back
   NewTagFunctions <- sapply(
     NewTags,
     CreateTagFunction,
