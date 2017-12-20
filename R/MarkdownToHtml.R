@@ -55,8 +55,8 @@ UnescapeEntities <- function(x){
     str_replace_all(fixed("&rdquo;"), '"') %>%
     str_replace_all(fixed("&ldquo;"), '"') %>%
     str_replace_all(fixed("&mdash;"), '-') %>%
-    str_replace_all(fixed("&ndash;"), '-')
-
+    str_replace_all(fixed("&ndash;"), '-') %>%
+    str_replace_all(fixed("&hellip;"), '...')
 
   return(x)
 }
